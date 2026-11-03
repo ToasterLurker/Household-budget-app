@@ -1,5 +1,7 @@
 # Household Budget App
 
+> **Architecture pivot approved (2026-11-03):** The long-term budgeting app is moving from Supabase + Vercel to **Cloudflare Workers + D1** as a single operating provider, under our permanent **$0 mandatory recurring-cost policy**. New code and instructions are in [cloudflare/](cloudflare/README.md). The Vercel site remains available as a fictional legacy demo until the replacement is fully tested. Do not enter real financial data yet.
+
 > **Permanent requirement: $0 in mandatory operating or maintenance costs.** See [Zero-Cost Operating Policy](docs/ZERO_COST_POLICY.md). Never introduce paid hosting, required bank data APIs, billable AI services, paid notifications, or mandatory upgrades. Provider free tiers are not guaranteed forever; preserve portable data and migrations.
 
 Private, Chrome-first household budgeting web app for two people, with independent personal accounts and two shared accounts (Bill-Pay and Groceries).
