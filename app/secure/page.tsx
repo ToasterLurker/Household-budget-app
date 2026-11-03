@@ -77,7 +77,7 @@ export default async function SecureHouseholdPage({ searchParams }: {
       <JoinHouseholdInvite />
     </> : <>
       <section className="section-heading"><h2>Authorized account overview</h2>
-        <p className="muted">Each account's visibility is enforced by the database, not by hiding rows in the browser.</p>
+        <p className="muted">Each account&apos;s visibility is enforced by the database, not by hiding rows in the browser.</p>
       </section>
       {accountError ? <div className="demo-warning" role="alert">Unable to load accounts.</div> :
         <div className="card-grid">{(accounts ?? []).map(account =>
