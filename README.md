@@ -4,11 +4,14 @@
 
 A responsive, Chrome-first household budgeting web application for two people with independent personal money and shared Bill-Pay / Groceries accounts.
 
-## Checkpoint 3 — Secure household foundation staged
+## Checkpoint 4 — Zero-cost portable demo backups and secure backend preparation
 
 **Status: Code deployed, external database not yet connected, live RLS checks not yet run.**
 
-The existing interactive fictional-data demo still works:
+The interactive fictional-data demo now includes:
+- **JSON backups:** download a portable file containing all current demo transactions and transfers
+- **Restore:** validate and restore a JSON backup after confirming replacement of existing demo activity
+- **CSV exports:** export a spreadsheet of recorded activity without any third-party service
 - Record demo expenses/income and transfers without counting transfers as expenses
 - See separate account balances and weekly contributions
 - Undo entries and persist fictional entries in the same browser's local storage
@@ -23,6 +26,9 @@ A separate secure workspace is now prepared at `/secure`:
 - Graceful, explicit setup screen if Supabase environment details are missing
 
 **The secure workspace is in staging and must not be used for real finances yet.** Its database permissions must be tested against independent user identities; the live ledger still has no production mutation APIs.
+
+
+For backup format and security caveats, read [Data Portability](docs/DATA_PORTABILITY.md). All backup and export features are free, run inside the browser, and are **for fictional demo data only**. The stable live site is hosted on a free Vercel URL; third-party hosting policies can change.
 
 ## Setup
 
