@@ -38,10 +38,10 @@ test("household invitations are 32-byte random single-use tokens and membership 
 test("server auth verifies claims and fail-closed route is present", () => {
   for (const filename of [
     "app/sign-in/actions.ts", "app/sign-in/page.tsx", "app/secure/page.tsx",
-    "app/auth/callback/route.ts", "lib/supabase/server.ts", "lib/supabase/proxy.ts",
+    "app/auth/callback/route.ts", "lib/supabase/server.ts", "proxy.ts",
   ]) assert.ok(existsSync(filename), filename);
   assert.match(readFileSync("app/secure/page.tsx", "utf8"), /auth\.getClaims\(\)/);
-  assert.match(readFileSync("lib/supabase/proxy.ts", "utf8"), /auth\.getClaims\(\)/);
+  assert.match(readFileSync("proxy.ts", "utf8"), /auth\.getClaims\(\)/);
   assert.match(readFileSync("app/secure/page.tsx", "utf8"), /no Supabase project has been connected/);
 });
 
