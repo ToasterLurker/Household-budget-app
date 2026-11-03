@@ -1,31 +1,36 @@
 # Household Budget App
 
-**Checkpoint 1 — UI scaffold (not deployed).**
+A private, Chrome-first household budgeting Progressive Web App project. This is a **fictional, local-only demonstration** while the secure backend is being designed.
 
-Private, mobile-first household budgeting web app for two members who keep personal finances separate and jointly fund Bill-Pay and Groceries.
+## Checkpoint 2 — Interactive demo
 
-## Current functionality
+- Responsive Next.js App Router, TypeScript, Tailwind CSS interface
+- Home, Accounts, Transactions, Contributions, Savings, and Settings pages
+- Money-safe demo ledger using **integer cents**, never floating-point transaction amounts
+- Manual demo purchases and deposits update their example account balance immediately
+- Manual transfers subtract from one example account and add to the other, without counting as spending
+- Weekly 50/50 *example* contribution targets to two separate shared accounts; record the displayed person's contribution as a transfer
+- Remove demo entries to reverse their effect on example balances
+- Data persists in **this browser's localStorage only**, not a server or another phone
+- Automated tests for rounding, transfer integrity, weekly contributions, data validation, and page structure
 
-- Next.js App Router, TypeScript, Tailwind CSS 4
-- Responsive Home, Accounts, Transactions, Contributions, Savings and Settings routes
-- Fictional demo account balances and example transactions
-- Basic structure tests and lint/typecheck scripts
-- Project development rules in [AGENTS.md](AGENTS.md)
+This is a demonstration, **not a production financial service**. Do not enter real personal information or bank account details. There is no authentication, bank synchronization, server-side ledger, financial forecasting, or multi-user visibility control yet. The savings page is a placeholder.
 
-**No real data is stored.** Authentication, bank connections, financial calculations, editing and deployment have not been implemented.
+## Run or verify
 
-## Run on a cloud development environment
+In a Node.js 22+ environment:
 
-1. Open the repository with Codex Cloud or another Node.js cloud workspace.
-2. Run `npm install`.
-3. Run `npm run dev` to start the development server.
-4. Preview the workspace's forwarded web server.
-5. Validate with `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`.
+1. `npm install`
+2. `npm run test`
+3. `npm run typecheck`
+4. `npm run lint`
+5. `npm run build`
+6. `npm run dev` for local preview
 
-These checks have been configured but **have not yet been run** by this chat session. Please verify them in a working Node.js environment before considering Checkpoint 1 complete.
+No tokens or credentials should be committed. The first deployment uses direct file uploads to Vercel, not an automated GitHub project link.
 
 ## Next checkpoint
 
-After visual review, add real data storage and authentication with privacy boundaries and money-safe integer-cent calculations. Keep bank syncing and advanced forecasts for later checkpoints.
+Implement secure authentication, a server-side account and transaction model, household membership with access controls, and tests proving personal accounts are private. Do not allow real finances to be recorded until those features are verified.
 
-Never commit secrets or enter real financial data in the demo.
+Read [AGENTS.md](AGENTS.md) for permanent product invariants.
