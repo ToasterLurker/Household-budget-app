@@ -54,3 +54,15 @@ Preferred candidate replacement: **a single operating provider** for the public 
 - No real financial data until independent login, private vs shared access, transfer integrity, backup and recovery are independently tested.
 
 The Cloudflare proposal is a *candidate*; do not claim it is already connected or deployed. The existing Supabase database remains a test resource, not the chosen long-term architecture.
+
+
+## Cloudflare architecture approved and in development (2026-11-03)
+- The user explicitly approved migrating away from Supabase to a single Cloudflare operating platform.
+- New implementation: `cloudflare/`, using Workers Static Assets (web app), Workers (API), and D1 (SQL account data). GitHub remains source control only.
+- Current checkpoint: independent responsive demo frontend, D1 schema with immutable integer-cent ledger and membership safeguards. All nonpublic API routes MUST fail closed until passkey authentication and account authorization is verified.
+- Do not introduce paid auth providers, billable emails/SMS, paid features, or other operating providers. Future login should use first-party passkeys, invites and free recovery codes, with recovery independently tested.
+- Respect Workers Free request/CPU limits, D1 Free storage/row caps, and never enable paid upgrades.
+- Keep Vercel's fictional demo available until the Cloudflare version has been deployed, independently tested, and deemed safe.
+- Never apply Supabase SQL migrations to D1. Do not delete Supabase project or legacy data without explicit approval.
+- Preserve original JSON demo backup compatibility; plan authenticated, encrypted/restorable backups for real data.
+- Production gates: browser passkey enrollment/login/recovery, two independent identities, personal/shared authorization, concurrent transfer integrity, free export/restore, and no-cost recovery from free-tier limits.
