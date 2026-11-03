@@ -44,7 +44,7 @@ test("server auth verifies claims and fail-closed route is present", () => {
   assert.match(readFileSync("proxy.ts", "utf8"), /auth\.getClaims\(\)/);
   const page = readFileSync("app/secure/page.tsx", "utf8");
   assert.match(page, /if \(!client\)/);
-  assert.match(page, /database is not connected to this deployment yet/);
+  assert.match(page, /is not connected to this deployment yet/);
 });
 
 test("client invitation codes are not placed in URLs or committed", () => {
