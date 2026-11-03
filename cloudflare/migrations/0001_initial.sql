@@ -1,7 +1,5 @@
 -- Cloudflare D1 (SQLite) schema: no Supabase, no external authentication provider.
 -- Migration contains no live user records. All application data is private by default.
-PRAGMA foreign_keys = ON;
-
 CREATE TABLE IF NOT EXISTS schema_meta (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
