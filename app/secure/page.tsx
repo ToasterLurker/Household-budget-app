@@ -84,7 +84,7 @@ export default async function SecureHouseholdPage({ searchParams }: {
           <article className="panel" key={account.id}>
             <div className="panel-top"><h3>{account.name}</h3>
               <span className="tag">{account.kind === "personal" ? "Personal" : "Shared"}</span></div>
-            <p className="panel-money">$0.00</p>
+            <p className="panel-money">Not yet funded</p>
             <p className="muted">Zero-balance account · transactions not yet enabled</p>
             {account.kind === "personal" && <p className="muted">Visibility: {account.visibility}</p>}
           </article>)}</div>}
