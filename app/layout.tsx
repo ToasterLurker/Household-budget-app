@@ -35,7 +35,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <div className="main-area">
             <header className="topbar">
               <Link className="mobile-brand" href="/">◈ Household Budget</Link>
-              <div className="topbar-meta"><Link href="/secure" className="secure-link">Secure setup</Link><span className="status-dot" /> Demo workspace</div>
+              <div className="topbar-meta"><span className="status-dot" /> Demo workspace</div>
             </header>
             <main id="main-content" className="content">{children}</main>
           </div>
