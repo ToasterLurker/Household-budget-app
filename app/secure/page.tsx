@@ -4,100 +4,147 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createHouseholdAction, createPersonalAccountAction } from "./actions";
 import { signOutAction } from "@/app/sign-in/actions";
 import { CreateHouseholdInvite, JoinHouseholdInvite } from "@/components/household-invitations";
+import SecureLedger, {
+  type AuthorizedAccount, type AuthorizedJournalRow,
+} from "@/components/secure-ledger";
 
 export const dynamic = "force-dynamic";
 
 const messages: Record<string, string> = {
   "invalid-name": "Enter a name between 1 and 80 characters.",
-  "household": "Could not create household. You might already belong to one.",
+  "household": "Could not create household. You may already be a member of one.",
   "account": "Could not create personal account. Check permissions and try again.",
+  "entry-input": "Check the account, amount, date, and description and try again.",
+  "entry-save": "Could not record activity. You may not have permission to edit this account.",
+  "transfer-save": "Could not transfer. Check that the accounts differ, that you have access to both, and that the source has sufficient funds.",
+  "opening-save": "Could not set the opening balance. Only authorized members may do this, before any transactions.",
+  "visibility-save": "Could not update access. Only a personal account owner can change sharing.",
+};
+const notices: Record<string, string> = {
+  "entry-recorded": "Sample activity recorded atomically in the test database.",
+  "transfer-recorded": "Sample transfer recorded in both accounts without counting as spending.",
+  "opening-recorded": "Starting test balance saved without counting as income.",
+  "visibility-updated": "Your personal account sharing choice is now enforced by the database.",
 };
 
 export default async function SecureHouseholdPage({ searchParams }: {
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; notice?: string }>
 }) {
   const client = await createSupabaseServerClient();
   if (!client) return <div className="secure-wrap">
     <p className="eyebrow">SECURE WORKSPACE · PREPARATION</p>
-    <h1>Multi-user accounts are the next checkpoint</h1>
+    <h1>Private household budgeting</h1>
     <div className="demo-warning">
-      <strong>The demo remains available.</strong> The sign-in and database security code has been prepared,
-      but no Supabase project has been connected to this deployment. Real sign-in and shared accounts are disabled.
+      <strong>The browser-only demo remains available.</strong> The secure Supabase database
+      is not connected to this deployment yet, so real sign-in is unavailable.
     </div>
-    <p className="muted">We need a Supabase project, the reviewed RLS migration, and verified isolation tests before entering financial data.</p>
     <Link href="/" className="text-link">Return to interactive demo →</Link>
   </div>;
 
-  const { data: claimData, error: claimError } = await client.auth.getClaims();
-  if (claimError || !claimData?.claims?.sub) redirect("/sign-in");
+  const { data: claims, error: authError } = await client.auth.getClaims();
+  const currentUserId = claims?.claims?.sub;
+  if (authError || typeof currentUserId !== "string") redirect("/sign-in");
 
-  const { data: households, error: householdsError } = await client
+  const { data: households, error: householdError } = await client
     .from("households").select("id, name, created_at").limit(1);
-
   const q = await searchParams;
-  if (householdsError) return <div className="secure-wrap">
-    <p className="eyebrow">SECURE WORKSPACE · DATABASE NOT READY</p>
-    <h1>Database setup is incomplete</h1>
+
+  if (householdError) return <div className="secure-wrap">
+    <p className="eyebrow">SECURE WORKSPACE · DATABASE UNAVAILABLE</p>
+    <h1>Cannot safely load your household</h1>
     <div className="demo-warning" role="alert">
-      Your identity was verified, but the secure household tables are not available yet.
-      Apply and verify the Supabase migration before enabling the household workspace.
+      The authenticated database query failed. We will not show financial records
+      until access can be verified.
     </div>
     <form action={signOutAction}><button className="action-button secondary-action">Sign out</button></form>
   </div>;
 
   const household = households?.[0] ?? null;
-  const { data: accounts, error: accountError } = household
+
+  const accountResponse = household
     ? await client.from("accounts")
-      .select("id, name, kind, visibility, owner_user_id, current_balance_cents")
+      .select("id,name,kind,visibility,owner_user_id,current_balance_cents,opening_balance_cents")
       .eq("household_id", household.id).order("created_at")
     : { data: [], error: null };
+  const accounts = (accountResponse.data ?? []).map(item => ({
+    id: String(item.id),
+    name: String(item.name),
+    kind: item.kind as AuthorizedAccount["kind"],
+    owner_user_id: item.owner_user_id as string | null,
+    visibility: item.visibility as AuthorizedAccount["visibility"],
+    current_balance_cents: item.current_balance_cents as number | string | null,
+    opening_balance_cents: item.opening_balance_cents as number | string | null,
+  }));
+
+  const accountIds = accounts.map(item => item.id);
+  const ledgerResponse = accountIds.length > 0
+    ? await client.from("ledger_entries")
+      .select("id,account_id,entry_kind,amount_cents,description,occurred_on,created_at")
+      .in("account_id", accountIds)
+      .order("occurred_on", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(50)
+    : { data: [], error: null };
+  const entries: AuthorizedJournalRow[] = (ledgerResponse.data ?? []).map(item => ({
+    id: String(item.id),
+    account_id: String(item.account_id),
+    entry_kind: item.entry_kind as AuthorizedJournalRow["entry_kind"],
+    amount_cents: item.amount_cents as number | string,
+    description: String(item.description),
+    occurred_on: String(item.occurred_on),
+    created_at: String(item.created_at),
+  }));
 
   return <div className="secure-wrap">
     <div className="page-heading">
-      <div><p className="eyebrow">SECURE HOUSEHOLD · EXPERIMENTAL</p>
-        <h1>{household ? household.name : "Set up a household"}</h1>
-        <p className="muted">Signed in · Household data is governed by database access policies.</p>
+      <div>
+        <p className="eyebrow">SECURE HOUSEHOLD · TEST DATABASE</p>
+        <h1>{household ? household.name : "Set up your household"}</h1>
+        <p className="muted">Authenticated account · Personal and shared visibility enforced in PostgreSQL</p>
       </div>
       <form action={signOutAction}><button className="action-button secondary-action">Sign out</button></form>
     </div>
+
     <div className="demo-warning">
-      <strong>Security staging:</strong> Account and household access are being built and tested.
-      Financial entries and bank syncing remain disabled. Do not enter real financial information.
+      <strong>Testing only.</strong> The secure database is available, but live browser authentication,
+      concurrent requests, free backups and recovery still need acceptance testing.
+      Do not enter real financial, banking, or identity details yet.
+      The existing fictional <Link className="text-link" href="/">offline demo</Link> remains separate.
     </div>
     {q.error && messages[q.error] && <p className="auth-error" role="alert">{messages[q.error]}</p>}
+    {q.notice && notices[q.notice] && <p className="auth-notice" role="status">{notices[q.notice]}</p>}
+
     {!household ? <>
       <div className="panel">
-        <h3>Create your household</h3>
-        <p className="muted">Creates separate shared Bill-Pay and Groceries accounts with zero demo balances.</p>
+        <h3>Create a two-person household</h3>
+        <p className="muted">Creates separate zero-balance Bill-Pay and Groceries accounts.
+          Invite your partner after creating your household.</p>
         <form action={createHouseholdAction} className="auth-form">
-          <label>Household name<input name="name" placeholder="Our household" required maxLength={80} /></label>
-          <button className="action-button" type="submit">Create household</button>
+          <label>Household name<input name="name" placeholder="Our test household"
+            required maxLength={80} /></label>
+          <button className="action-button" type="submit">Create test household</button>
         </form>
       </div>
       <JoinHouseholdInvite />
     </> : <>
-      <section className="section-heading"><h2>Authorized account overview</h2>
-        <p className="muted">Each account&apos;s visibility is enforced by the database, not by hiding rows in the browser.</p>
-      </section>
-      {accountError ? <div className="demo-warning" role="alert">Unable to load accounts.</div> :
-        <div className="card-grid">{(accounts ?? []).map(account =>
-          <article className="panel" key={account.id}>
-            <div className="panel-top"><h3>{account.name}</h3>
-              <span className="tag">{account.kind === "personal" ? "Personal" : "Shared"}</span></div>
-            <p className="panel-money">Not yet funded</p>
-            <p className="muted">Zero-balance account · transactions not yet enabled</p>
-            {account.kind === "personal" && <p className="muted">Visibility: {account.visibility}</p>}
-          </article>)}</div>}
+      {(accountResponse.error || ledgerResponse.error)
+        ? <div className="auth-error" role="alert">
+          Cannot display financial data until the authenticated database query succeeds.
+        </div>
+        : <SecureLedger accounts={accounts} entries={entries} userId={currentUserId} />}
       <div className="panel spaced-panel">
-        <h3>Add your own personal account</h3>
-        <p className="muted">New personal accounts default to private. This stage creates only zero-balance records.</p>
+        <h3>Add your private personal account</h3>
+        <p className="muted">New accounts default to private and start at zero.
+          Only you can add or edit your personal transactions.</p>
         <form action={createPersonalAccountAction} className="auth-form">
-          <label>Account name<input name="name" placeholder="Personal checking" required maxLength={80} /></label>
-          <button className="action-button" type="submit">Add private account</button>
+          <label>Account name<input name="name" placeholder="Sample personal checking"
+            required maxLength={80} /></label>
+          <button className="action-button" type="submit">Create private test account</button>
         </form>
       </div>
       <CreateHouseholdInvite householdId={household.id} />
     </>}
-    <p className="footnote">Return to the <Link className="text-link" href="/">interactive demo</Link> for example transactions.</p>
+    <p className="footnote">All accounts in this workspace are for testing.
+      View the <Link className="text-link" href="/">free interactive browser demo</Link> without signing in.</p>
   </div>;
 }
