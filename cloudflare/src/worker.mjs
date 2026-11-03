@@ -11,14 +11,13 @@ const json = (value, status=200) => new Response(JSON.stringify(value), {
     "x-content-type-options": "nosniff",
     "referrer-policy": "no-referrer",
     "x-frame-options": "DENY",
-    "access-control-allow-origin": "null",
   },
 });
 
 export async function handleRequest(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
-  if (path.startsWith("/api/")) {
+  if (path === "/api" || path.startsWith("/api/")) {
     if (request.method !== "GET") return json({ error: "Method not available in the demo." }, 405);
     if (path === "/api/status") {
       let db = "not_initialized";
