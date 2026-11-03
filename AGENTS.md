@@ -1,28 +1,30 @@
 # Agent instructions — Household Budget App
 
-## Current objective
-Build a secure mobile-first browser-based budgeting app for two people. Work in small, testable checkpoints. **Checkpoint 2** introduces a client-side, interactive demonstration using fictional data only. It is not a real financial application. Preserve the existing working interface.
+## Product invariants
+- Each person keeps unrestricted personal money; there are no mandatory individual spending limits.
+- Joint Bill-Pay and Groceries accounts are separate real bank accounts in the eventual product. Weekly agreed contributions are 50/50, provisionally on Fridays.
+- Transfers between accounts are **not expenses**. Planned contributions are not funded transfers.
+- One household member can approve shared contribution changes, which must be audited and communicated to both.
+- Personal accounts default to private, owner-only editing. Owner-selectable visibility: private, balance-only, summary, full read-only. Shared accounts are visible to both members.
+- Unspent personal money carries forward; personal savings goals are optional.
+- Real manual purchases immediately affect app-calculated availability, eventually reconciled against bank transactions without double counting. Even a $0.01 mismatch needs manual review.
+- Money uses **integer cents** in all real account and transaction logic.
+- Conservative forecasts are warnings, not deductions from normal expected spending.
+- Historical and future cash-flow graphs have separate lines for separate authorized accounts.
 
-## Financial invariants
-- Each member owns their personal money; there are no compulsory personal spending limits.
-- A shared Bill-Pay account and separate shared Groceries account have independent balances and 50/50 weekly contributions, provisionally Friday.
-- Transfers between accounts are not expenses. Planned contributions are not deposits until recorded.
-- One household member may approve a shared contribution change, which must be logged and both members informed.
-- Personal accounts are private by default, with owner-controlled balance-only, summary, or read-only transaction sharing. Shared accounts are accessible to both.
-- Unspent personal money rolls forward; virtual savings and savings goals are optional.
-- Manual entries immediately affect app-calculated availability. When bank sync is implemented, reconcile without double counting and require review for *any* amount mismatch, even one cent.
-- Use integer cents for money calculations. No use of floating point amounts for transaction arithmetic.
-- Expected cash-flow is the normal scenario; conservative forecasts show warnings separately.
-- Financial calendar and timeline maintain separate account lines and honor all privacy controls.
+## Development stages
+- Checkpoint 1: responsive demo shell.
+- Checkpoint 2: interactive **fictional**, browser-local expense/income/transfer ledger.
+- Checkpoint 3: secure auth and household scaffolding, Supabase SQL migration and RLS test plan. **Auth/database not connected yet. No real financial data.**
+- Checkpoint 4: test Supabase project, live RLS acceptance tests, two-user sign-in, zero-balance account setup.
+- Later: transactional money ledger RPC, real bank integration, cash flow, calendar, forecast, notifications.
 
-## Safety, scope and deployment
-- Do not commit passwords, raw bank data, access tokens, Supabase service role keys, or private financial information.
-- Do not claim browser-only localStorage provides real authentication, server-side privacy, or multi-device sync.
-- No real data until authentication, access controls, ledger integrity and relevant tests are complete.
-- All sample accounts, contributions and transactions must be visibly marked as fictional.
-- Future backend access must be authorized server-side and through appropriate database row-level security.
-- Never silently modify shared contribution rules or personal savings targets.
-- Re-run tests, TypeScript, lint, and build before each deployed checkpoint.
-
-## Checkpoint 2 scope
-Implement working demonstration forms for expenses, income, manual transfers and weekly shared contributions with local-only persistence; keep independent account balances; permit undo by removing an entry; explain demonstration limitations. Do not connect bank accounts or implement unverified authentication. Next step: secure auth/data model, then true account-level permissions and multi-user features.
+## Security rules
+- Never commit or request secrets, service-role keys, bank passwords, or actual bank transaction datasets.
+- Browser-only demo state is not secure or synchronized across devices.
+- Every exposed DB table requires explicit grants + RLS. No cross-user leak through reports/aggregates/notifications.
+- SQL SECURITY DEFINER functions must have fixed search_path and explicit authorization checks.
+- The new secure mode must fail closed when configuration is missing or sessions are unverified.
+- Direct user writes to balances and ledger must remain disabled until audited money-safe DB RPCs exist.
+- Before claiming security, run the complete live RLS matrix in supabase/SECURITY_TEST_PLAN.md.
+- Run tests, typechecking, lint and build before every deployment; report what actually ran.
