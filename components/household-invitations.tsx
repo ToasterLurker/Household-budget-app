@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -40,7 +40,7 @@ export function JoinHouseholdInvite() {
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const router = useRouter();
-  async function join(event: React.FormEvent<HTMLFormElement>) {
+  async function join(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true); setStatus("");
     const client = createSupabaseBrowserClient();
