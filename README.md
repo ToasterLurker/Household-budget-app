@@ -1,55 +1,56 @@
 # Household Budget App
 
-> **Permanent project constraint: $0 in mandatory ongoing expenses.** Hosting, account storage, maintenance, reporting and core budgeting functions must operate without subscription fees, paid APIs or required upgrades. See [Zero-Cost Operating Policy](docs/ZERO_COST_POLICY.md). Vendor free tiers may change, so portable data and a free/local fallback are design requirements.
+> **Permanent requirement: $0 in mandatory operating or maintenance costs.** See [Zero-Cost Operating Policy](docs/ZERO_COST_POLICY.md). Never introduce paid hosting, required bank data APIs, billable AI services, paid notifications, or mandatory upgrades. Provider free tiers are not guaranteed forever; preserve portable data and migrations.
 
-A responsive, Chrome-first household budgeting web application for two people with independent personal money and shared Bill-Pay / Groceries accounts.
+Private, Chrome-first household budgeting web app for two people, with independent personal accounts and two shared accounts (Bill-Pay and Groceries).
 
-## Checkpoint 4 — Zero-cost portable demo backups and secure backend preparation
+## Version 0.5 — Secure multi-user test foundation
 
-**Status: Code deployed, external database not yet connected, live RLS checks not yet run.**
+**Test database connected, production real-finance use NOT authorized.**
 
-The interactive fictional-data demo now includes:
-- **JSON backups:** download a portable file containing all current demo transactions and transfers
-- **Restore:** validate and restore a JSON backup after confirming replacement of existing demo activity
-- **CSV exports:** export a spreadsheet of recorded activity without any third-party service
-- Record demo expenses/income and transfers without counting transfers as expenses
-- See separate account balances and weekly contributions
-- Undo entries and persist fictional entries in the same browser's local storage
+### Free browser-only demo
+- Home, Accounts, Transactions, Contributions, Savings and Settings
+- Record fictional purchases, income, and transfers; shared contributions are transfers, not spending
+- Separate balances, sample weekly contributions and optional demo activity
+- Local browser persistence and **free JSON backup/restore and CSV export**
+- No account required, no real financial data
 
-A separate secure workspace is now prepared at `/secure`:
-- Supabase email/password sign-in and confirmation callback, using cookie-based SSR
-- Verifiable sessions via `getClaims()` and Next.js 16 proxy session refresh
-- SQL migration for profiles, household memberships (maximum two), two shared accounts, private personal accounts, and read-only ledger journal
-- PostgreSQL RLS restricting every table; separate account-row and transaction-history visibility
-- Owner/member-only creation routines and one-use cryptographically random partner invitations
-- No direct client writes to account balances or journal records
-- Graceful, explicit setup screen if Supabase environment details are missing
+### Secure household test workspace
+- Supabase Free project `household-budget-app-test` in us-east-1, under HomeBudgeting
+- Email/password authentication code and Next.js cookie-based session handling
+- Owner-controlled private, balance-only, summary or full read-only personal visibility
+- Two shared household accounts; 50/50 contribution logic to be implemented later
+- Cryptographically random one-use partner invitations
+- Atomic signed-in manual income/expense/transfer routines, integer cents, paired transfer journal entries
+- Idempotent transaction operations so identical retries do not charge accounts twice
+- Account-specific initial balances, not classified as income; locked after first transaction
+- Audit trails for personal visibility and starting-balance changes
+- Read-only authorized journal history and account-level RLS with column-level privilege minimization
 
-**The secure workspace is in staging and must not be used for real finances yet.** Its database permissions must be tested against independent user identities; the live ledger still has no production mutation APIs.
+### Security limitations
+- **Never enter real bank account details, personal balances or actual transaction histories in this test workspace.**
+- SQL role simulation has validated household privacy, owner-only edits, denied outsider access, invitation use, transfer idempotency and starting-balance controls.
+- Actual end-to-end browser Auth confirmation, concurrent requests, full backup/recovery and live two-member acceptance tests are **still pending**.
+- The temporary project can pause due to Supabase Free inactivity; never depend on its availability without export/recovery.
 
+## Get started
 
-For backup format and security caveats, read [Data Portability](docs/DATA_PORTABILITY.md). All backup and export features are free, run inside the browser, and are **for fictional demo data only**. The stable live site is hosted on a free Vercel URL; third-party hosting policies can change.
+- Demo: https://household-budget-app-gold-iota.vercel.app
+- Secure test workspace: https://household-budget-app-gold-iota.vercel.app/secure
+- Authentication setup: [Test Login Setup](docs/TEST_LOGIN_SETUP.md)
+- Database migrations: `supabase/migrations/`
+- Security checklist: [Security Test Plan](supabase/SECURITY_TEST_PLAN.md)
+- Portable demo backups: [Data Portability](docs/DATA_PORTABILITY.md)
+- Agent rules: [AGENTS.md](AGENTS.md)
 
-## Setup
-
-See [docs/SETUP_SUPABASE.md](docs/SETUP_SUPABASE.md) for required project setup, [supabase/SECURITY_TEST_PLAN.md](supabase/SECURITY_TEST_PLAN.md) for the test matrix, and [AGENTS.md](AGENTS.md) for product rules.
-
-Never commit service-role keys, database passwords, live personal bank records, or secrets. Public Supabase keys do not bypass RLS.
-
-## Test and build
-
-In a Node.js 22+ workspace:
+## Build checks
 
 ```bash
 npm install
-npm run test
+npm test
 npm run typecheck
 npm run lint
 npm run build
 ```
 
-The deployment system runs those checks before the Next.js production build.
-
-## Next checkpoint
-
-Provision a test Supabase instance, apply the migration, verify all RLS cases and auth flows. Then implement audited, atomic, integer-cent journal mutation functions and account-level visibility changes before allowing real financial entries.
+The deployed secure workspace must not be treated as production-safe until all tests and authenticated backup/restore flows pass.
