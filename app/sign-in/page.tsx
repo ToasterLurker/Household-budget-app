@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { signInAction, signUpAction } from "./actions";
 
@@ -20,7 +19,7 @@ const notices: Record<string, string> = {
 export default async function SignInPage({ searchParams }: {
   searchParams: Promise<{ error?: string; notice?: string }>
 }) {
-  const configured = isSupabaseConfigured();
+  const configured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
   if (configured) {
     const client = await createSupabaseServerClient();
     const { data } = await client!.auth.getClaims();
