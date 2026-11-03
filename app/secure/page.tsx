@@ -63,7 +63,7 @@ export default async function SecureHouseholdPage({ searchParams }: {
 
   const accountResponse = household
     ? await client.from("accounts")
-      .select("id,name,kind,visibility,owner_user_id,current_balance_cents,opening_balance_cents")
+      .select("id,name,kind,visibility,owner_user_id,current_balance_cents")
       .eq("household_id", household.id).order("created_at")
     : { data: [], error: null };
   const accounts = (accountResponse.data ?? []).map(item => ({
@@ -73,7 +73,6 @@ export default async function SecureHouseholdPage({ searchParams }: {
     owner_user_id: item.owner_user_id as string | null,
     visibility: item.visibility as AuthorizedAccount["visibility"],
     current_balance_cents: item.current_balance_cents as number | string | null,
-    opening_balance_cents: item.opening_balance_cents as number | string | null,
   }));
 
   const accountIds = accounts.map(item => item.id);
