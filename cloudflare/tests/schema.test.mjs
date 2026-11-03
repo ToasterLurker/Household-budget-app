@@ -7,6 +7,7 @@ const migration = readFileSync(new URL("../migrations/0001_initial.sql", import.
 
 function dbWithFixtures() {
   const db = new DatabaseSync(":memory:");
+  db.exec("PRAGMA foreign_keys = ON");
   db.exec(migration);
   const user = db.prepare("INSERT INTO users(id,display_name) VALUES (?,?)");
   for (const [id,name] of [["a","Member A"],["b","Member B"],["c","Outsider"]]) user.run(id,name);
@@ -38,6 +39,7 @@ const balance = (db,id) => db.prepare(
 
 test("schema migration creates all required tables and does not seed real users", () => {
   const db = new DatabaseSync(":memory:");
+  db.exec("PRAGMA foreign_keys = ON");
   db.exec(migration);
   const tables = db.prepare(
     "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
