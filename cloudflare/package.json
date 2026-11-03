@@ -1,0 +1,16 @@
+{
+  "name": "household-budget-cloudflare",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "dev": "npm run build && wrangler dev",
+    "test": "node --test tests/*.test.mjs",
+    "check": "npm run test && npm run build",
+    "deploy": "wrangler deploy && wrangler d1 migrations apply household-budget-data --remote"
+  },
+  "devDependencies": {
+    "wrangler": "^4.68.0"
+  }
+}
