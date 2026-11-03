@@ -1,19 +1,23 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { signInAction, signUpAction } from "./actions";
+import { signInAction, signUpAction, resendConfirmationAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 const errors: Record<string, string> = {
   "not-configured": "Secure authentication has not been connected yet.",
   "invalid-input": "Please use a valid email and a password of at least 8 characters.",
   "sign-in-failed": "We could not sign you in. Check your credentials.",
+  "email-not-confirmed": "Your account exists, but your email is not confirmed yet. Open the verification email, then sign in. If it did not arrive, use Resend confirmation below.",
+  "invalid-email": "Enter a valid email address.",
+  "send-rate-limited": "A confirmation email was requested too recently. Check your inbox, then try again after a minute.",
   "sign-up-failed": "Registration could not be completed. Try again or check your email.",
   "callback": "Your email verification link was invalid or expired.",
 };
 const notices: Record<string, string> = {
   "check-email": "Check your inbox for a confirmation link before signing in.",
   "signed-out": "You have been signed out.",
+  "confirmation-requested": "If this email address has an unconfirmed account, a new confirmation email has been requested. Check your inbox and spam folder.",
 };
 
 export default async function SignInPage({ searchParams }: {
@@ -43,6 +47,15 @@ export default async function SignInPage({ searchParams }: {
           <label>Password<input name="password" type="password" autoComplete="current-password" minLength={8} required /></label>
           <button className="action-button" type="submit">Sign in</button>
         </form>
+        <details className="signup-details" open={query.error === "email-not-confirmed"}>
+          <summary>Resend email confirmation</summary>
+          <p className="muted">Already registered but cannot sign in? Enter the same email address
+            to request another verification link. You do not need to register again.</p>
+          <form action={resendConfirmationAction} className="auth-form">
+            <label>Email<input name="email" type="email" autoComplete="email" maxLength={254} required /></label>
+            <button className="action-button secondary-action" type="submit">Resend confirmation email</button>
+          </form>
+        </details>
         <details className="signup-details"><summary>Create an account</summary>
           <form action={signUpAction} className="auth-form">
             <label>Email<input name="email" type="email" autoComplete="email" maxLength={254} required /></label>
