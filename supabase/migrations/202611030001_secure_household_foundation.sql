@@ -5,6 +5,9 @@
 
 begin;
 
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
+
 create schema if not exists private;
 revoke all on schema private from public;
 grant usage on schema private to authenticated;
@@ -216,9 +219,9 @@ begin
   if (select count(*) from public.household_members where household_id = _household_id) >= 2 then
     raise exception 'Household is full';
   end if;
-  _code := encode(gen_random_bytes(32), 'hex');
+  _code := encode(extensions.gen_random_bytes(32), 'hex');
   insert into public.household_invites(household_id, code_hash, created_by, expires_at)
-  values (_household_id, digest(_code, 'sha256'), _uid, now() + interval '48 hours');
+  values (_household_id, extensions.digest(_code, 'sha256'), _uid, now() + interval '48 hours');
   return _code;
 end;
 $$;
@@ -239,7 +242,7 @@ begin
 
   -- Lock the token row; a second simultaneous accept cannot use it.
   select * into _invite from public.household_invites
-  where code_hash = digest(_code, 'sha256') for update;
+  where code_hash = extensions.digest(_code, 'sha256') for update;
   if not found or _invite.used_at is not null or _invite.expires_at <= now() then
     raise exception 'Invite is invalid, used, or expired';
   end if;
