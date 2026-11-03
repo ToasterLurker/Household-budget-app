@@ -35,16 +35,18 @@ test("household invitations are 32-byte random single-use tokens and membership 
   assert.match(sql, /household_id = _invite\.household_id\) >= 2/);
 });
 
-test("server auth verifies claims and fail-closed route is present", () => {
-  for (const filename of [
-    "app/sign-in/actions.ts", "app/sign-in/page.tsx", "app/secure/page.tsx",
-    "app/auth/callback/route.ts", "lib/supabase/server.ts", "proxy.ts",
-  ]) assert.ok(existsSync(filename), filename);
-  assert.match(readFileSync("app/secure/page.tsx", "utf8"), /auth\.getClaims\(\)/);
-  assert.match(readFileSync("proxy.ts", "utf8"), /auth\.getClaims\(\)/);
-  const page = readFileSync("app/secure/page.tsx", "utf8");
-  assert.match(page, /if \(!client\)/);
-  assert.match(page, /is not connected to this deployment yet/);
+test("legacy Supabase auth pages are disabled after Cloudflare pivot", () => {
+  for (const filename of ["app/sign-in/page.tsx","app/secure/page.tsx","proxy.ts"]) {
+    assert.ok(existsSync(filename), filename);
+  }
+  const signIn=readFileSync("app/sign-in/page.tsx","utf8");
+  const secure=readFileSync("app/secure/page.tsx","utf8");
+  const proxy=readFileSync("proxy.ts","utf8");
+  assert.match(signIn, /Cloudflare/);
+  assert.match(secure, /Supabase sign-in has been retired/);
+  assert.doesNotMatch(signIn, /type="password"|signInAction|signUpAction/);
+  assert.doesNotMatch(secure, /auth\.getClaims\(\)|from\("accounts"\)/);
+  assert.doesNotMatch(proxy, /auth\.getClaims\(\)/);
 });
 
 test("client invitation codes are not placed in URLs or committed", () => {
