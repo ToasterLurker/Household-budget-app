@@ -90,7 +90,7 @@ function home() {
     '<div class="hero"><p>Personal checking · sample balance</p><strong>' + currency(personal) +
     '</strong><small>Ledger balance — not a bank balance or a future spending forecast.</small>' +
     '<a class="text-link" href="#transactions">Record a sample purchase →</a></div>' +
-    (negative.length ? '<div class="notice error" style="margin-top:16px">' +
+    (negative.length ? '<div class="notice error top-gap">' +
       escapeHtml(negative.map(a => a.name).join(", ") + " below zero") + '</div>' : "") +
     '<div class="section-head"><h2>Shared accounts</h2>' +
     '<p class="muted">Tracked independently. A surplus in one account never hides a shortage in another.</p></div>' +
@@ -164,7 +164,6 @@ function contributionPage() {
   const cards = targets.map(t => {
     const funded = contributionsThisWeek(rows, t.id);
     const remaining = Math.max(0, t.target - funded);
-    const width = Math.min(100, 100 * funded / t.target);
     return '<div class="card"><div class="card-title"><h3>' + escapeHtml(accountName(t.id)) +
       '</h3><span class="tag">50/50 example</span></div>' +
       '<p class="muted">Personal funding target each Friday</p>' +
@@ -178,7 +177,7 @@ function contributionPage() {
       '</button></div>';
   }).join("");
   return section("Weekly Contributions", "Test a transfer from your personal account to a shared account.",
-    '<p class="muted" style="margin-bottom:18px">These are fictional targets, not rules for your real household.' +
+    '<p class="muted bottom-gap">These are fictional targets, not rules for your real household.' +
     ' Your partner will have a separate contribution record after secure sign-in.</p>' +
     '<div class="cards">' + cards + '</div>', "FUNDING");
 }
@@ -193,17 +192,17 @@ function settingsPage() {
     '<div class="card"><h3>Data portability</h3>' +
     '<p class="muted">Backup and restore all transactions on this device. ' +
     'You can also move the fictional demo from our original website using a JSON backup.</p>' +
-    '<div class="controls" style="margin-top:14px">' +
+    '<div class="controls top-gap">' +
     '<button class="primary" data-action="backup">Download JSON backup</button>' +
     '<button class="secondary" data-action="csv">Export CSV spreadsheet</button></div>' +
     '<div class="details"><label for="backupFile">Restore JSON backup</label>' +
     '<input id="backupFile" type="file" accept=".json,application/json">' +
     '<p class="small-note">Restore replaces the current demo entries after confirmation. ' +
     'CSV files are not restorable.</p></div></div>' +
-    '<div class="card" style="margin-top:15px"><h3>Reset sample data</h3>' +
+    '<div class="card top-gap"><h3>Reset sample data</h3>' +
     '<p class="muted">Clear any demo changes and restore original example transactions.</p>' +
     '<button class="secondary danger" type="button" data-action="reset">Reset demo</button></div>' +
-    '<div class="card" style="margin-top:15px"><h3>Cloudflare migration status</h3>' +
+    '<div class="card top-gap"><h3>Cloudflare migration status</h3>' +
     '<p class="muted">The backend schema and private account rules are being tested. ' +
     'Passkey login and the live shared database are not enabled for real finances yet.</p>' +
     '<p class="small-note">Operating-cost requirement: $0 recurring.</p></div>' +
