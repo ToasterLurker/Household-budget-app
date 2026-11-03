@@ -28,3 +28,10 @@
 - Direct user writes to balances and ledger must remain disabled until audited money-safe DB RPCs exist.
 - Before claiming security, run the complete live RLS matrix in supabase/SECURITY_TEST_PLAN.md.
 - Run tests, typechecking, lint and build before every deployment; report what actually ran.
+
+## Mandatory lifetime cost constraint
+- **The app must remain usable and maintainable for $0 mandatory ongoing cost indefinitely.** No subscription, pay-per-call financial data provider, paid domain, premium database tier, hosted AI inference, paid notifications, or silent usage charges.
+- Each development decision must pass the cost policy in [docs/ZERO_COST_POLICY.md](docs/ZERO_COST_POLICY.md). Never add billable infrastructure or a trial that can auto-upgrade.
+- Bank auto-sync must be optional; manual entry and free user-controlled CSV/OFX/QFX import must work without any paid aggregator.
+- Plan free export/import, user-controlled backups and portability. Supabase Free pausing/backup limitations and free host quotas must not force an upgrade.
+- If a feature cannot meet zero-cost constraints, propose a free workaround or defer it. Never make users pay to preserve access to their data.
