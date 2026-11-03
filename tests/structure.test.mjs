@@ -4,22 +4,29 @@ import { readFileSync, existsSync } from "node:fs";
 
 const root = process.cwd();
 
-test("checkpoint 1 routes exist", () => {
-  for (const path of ["app/page.tsx", "app/[section]/page.tsx", "app/layout.tsx", "app/globals.css", "lib/demo.ts"]) {
-    assert.ok(existsSync(`${root}/${path}`), `Missing ${path}`);
+test("all six planned routes and shared demo UI exist", () => {
+  for (const path of [
+    "app/page.tsx", "app/[section]/page.tsx", "app/layout.tsx",
+    "app/globals.css", "components/demo-workspace.tsx", "lib/ledger-core.mjs",
+  ]) {
+    assert.ok(existsSync(root + "/" + path), "Missing " + path);
   }
-});
-
-test("section navigation includes six planned screens", () => {
-  const layout = readFileSync(`${root}/app/layout.tsx`, "utf8");
+  const layout = readFileSync(root + "/app/layout.tsx", "utf8");
   for (const label of ["Home", "Accounts", "Transactions", "Contributions", "Savings", "Settings"]) {
-    assert.ok(layout.includes(`label: "${label}"`), `Missing ${label}`);
+    assert.ok(layout.includes('label: "' + label + '"'), "Missing " + label);
   }
 });
 
-test("demo data is explicitly identified", () => {
-  const data = readFileSync(`${root}/lib/demo.ts`, "utf8");
-  assert.match(data, /Fictional data ONLY/);
-  const home = readFileSync(`${root}/app/page.tsx`, "utf8");
-  assert.match(home, /Sample data only/);
+test("live demo interface clearly discloses fictional local-only data", () => {
+  const workspace = readFileSync(root + "/components/demo-workspace.tsx", "utf8");
+  assert.match(workspace, /Fictional balances and transactions/);
+  assert.match(workspace, /do not enter real financial information/i);
+  assert.match(workspace, /localStorage/);
+});
+
+test("new money calculations are centralized in pure ledger engine", () => {
+  const workspace = readFileSync(root + "/components/demo-workspace.tsx", "utf8");
+  assert.match(workspace, /balanceFor/);
+  assert.match(workspace, /canTransfer/);
+  assert.match(workspace, /parseDollars/);
 });
