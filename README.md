@@ -1,5 +1,7 @@
 # Household Budget App
 
+> **Permanent project constraint: $0 in mandatory ongoing expenses.** Hosting, account storage, maintenance, reporting and core budgeting functions must operate without subscription fees, paid APIs or required upgrades. See [Zero-Cost Operating Policy](docs/ZERO_COST_POLICY.md). Vendor free tiers may change, so portable data and a free/local fallback are design requirements.
+
 A responsive, Chrome-first household budgeting web application for two people with independent personal money and shared Bill-Pay / Groceries accounts.
 
 ## Checkpoint 3 — Secure household foundation staged
