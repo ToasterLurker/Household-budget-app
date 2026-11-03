@@ -1,6 +1,24 @@
 # Required RLS acceptance test matrix — do not skip
 
-Status: **NOT RUN**. This migration has been authored but no Supabase project, seeded users, or test database exists yet. Static source-code tests are **not** substitutes for live row-level-security tests.
+Status: **PARTIALLY VERIFIED — TEST DATABASE ONLY (2026-11-03).** The Supabase Free test project `household-budget-app-test` exists in us-east-1, with five migration files applied. SQL-level role simulation was performed inside transactions using three fictional Auth fixture users and then `ROLLBACK` to leave the project empty. **Real browser Auth with separate user sessions, concurrency, disaster recovery and client-side permissions have NOT yet been acceptance-tested.** Static tests and SQL role simulation are not substitutes for complete live-client testing.
+
+
+## Completed SQL checks — 2026-11-03
+
+All SQL fixture tests were run in transactions with rollback (no persistent QA users/data):
+
+- Private, balance-only, summary, and full account-sharing rows behaved as designed across member A, member B and outsider C.
+- Raw journal transactions were hidden for balance-only and summary-only sharing.
+- The outsider could not read any household data or accounts.
+- Direct authenticated account balance updates and ledger writes were denied by grants.
+- Household creation, private account creation, one-time invitation issuance and redemption, invite reuse denial, outsider denial, and two-member household capacity logic passed.
+- Public RPC forwarding functions were smoke-tested after moving SECURITY DEFINER implementations into the non-exposed `private` schema.
+- Manual income, expenses, atomic transfer legs, replay idempotency, mismatched replay rejection, unauthorized account writes and visibility audit passed.
+- Account starting balances (including negative amounts) did not count as income and were locked after the first transaction.
+- Column-level grants disallow access to `opening_balance_cents` and client operation identifiers even where an account's balance may be shared.
+- Supabase security advisor currently reports one *informational* lint: `public.household_invites` intentionally has RLS enabled with **no policies** (deny all direct reads); invitations are accessed only through authorized RPCs.
+
+**Still required before real financial data:** end-to-end phone/desktop Auth sessions, email confirmation and callback URL configuration, two actual independent authenticated users, concurrency tests for simultaneous deposits/transfers, backups that are safely restorable without leaking account data, recovery from Free-tier suspension, browser UI privacy checks and dependency/security audits.
 
 ## Fixtures
 
@@ -56,5 +74,5 @@ Use the Supabase local emulator / PostgreSQL RLS test harness so every query exe
 - Session checks use verified JWT claims; data access is subject to PostgreSQL RLS.
 - Personal accounts are private by default; an owner may eventually enable sharing only via an audited, narrow control.
 - Invites are one-time, 48-hour, cryptographically random codes. Persist only their SHA-256 hash.
-- Table writes are revoked for `authenticated` and `anon`. At this checkpoint, no real ledger mutation RPCs are present.
+- Table writes are revoked for `authenticated` and `anon`. Atomic, idempotent money-safe mutation RPCs are now installed in the **test** database, but are not authorized for production financial use until independent end-to-end verification.
 - Views or aggregate reports added later must never bypass permissions for balance-only or summary sharing.
