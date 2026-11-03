@@ -1,26 +1,28 @@
 # Agent instructions — Household Budget App
 
 ## Current objective
-Develop a secure, mobile-first browser-based Progressive Web App for a two-person household. Deliver small, testable checkpoints. **Checkpoint 1** is a scaffold and clickable demo UI with fictional data only. Do not connect real financial data.
+Build a secure mobile-first browser-based budgeting app for two people. Work in small, testable checkpoints. **Checkpoint 2** introduces a client-side, interactive demonstration using fictional data only. It is not a real financial application. Preserve the existing working interface.
 
-## Agreed financial behavior
-- Each member owns their personal income and money; there are no mandatory personal spending category budgets.
-- Shared bill-pay and grocery accounts have separate balances and 50/50 weekly contributions, provisionally Fridays.
-- Transfers between accounts are not expenses. Scheduled contributions are not confirmed deposits.
-- Both household members can approve shared budget changes; changes require an audit history.
-- Personal accounts default to private. Each owner chooses which balances/summary/transactions can be viewed by the other. Shared account data is visible to both.
-- Unused personal discretionary money rolls forward; optional virtual or real savings and goals are opt-in.
-- Manual purchases reduce app-calculated available money immediately. Eventual bank sync reconciles duplicates; any discrepancy in manually entered vs bank amount requires manual review.
-- Automatic transaction categories support user-approved persistent rules. Automatically detected recurring expenses feed forecasts.
-- Expected cash-flow is primary; conservative scenario is separate. Shortage alerts should be deduplicated.
-- Calendar and continuous cash-flow graph show separate account balances and honor privacy; historical vs projected data must be visually distinct.
+## Financial invariants
+- Each member owns their personal money; there are no compulsory personal spending limits.
+- A shared Bill-Pay account and separate shared Groceries account have independent balances and 50/50 weekly contributions, provisionally Friday.
+- Transfers between accounts are not expenses. Planned contributions are not deposits until recorded.
+- One household member may approve a shared contribution change, which must be logged and both members informed.
+- Personal accounts are private by default, with owner-controlled balance-only, summary, or read-only transaction sharing. Shared accounts are accessible to both.
+- Unspent personal money rolls forward; virtual savings and savings goals are optional.
+- Manual entries immediately affect app-calculated availability. When bank sync is implemented, reconcile without double counting and require review for *any* amount mismatch, even one cent.
+- Use integer cents for money calculations. No use of floating point amounts for transaction arithmetic.
+- Expected cash-flow is the normal scenario; conservative forecasts show warnings separately.
+- Financial calendar and timeline maintain separate account lines and honor all privacy controls.
 
-## Security and implementation
-- No credentials, API keys, secrets, raw bank data, or private financial information in Git.
-- Authorization must be enforced server-side / at data access, not by hiding UI controls.
-- Use fixed-precision currency values (integer cents); avoid floating-point account math.
-- Never represent demo data as real money.
-- Future features need tests for transfers, recurring events, privacy, reconciliation, and account-level shortages.
+## Safety, scope and deployment
+- Do not commit passwords, raw bank data, access tokens, Supabase service role keys, or private financial information.
+- Do not claim browser-only localStorage provides real authentication, server-side privacy, or multi-device sync.
+- No real data until authentication, access controls, ledger integrity and relevant tests are complete.
+- All sample accounts, contributions and transactions must be visibly marked as fictional.
+- Future backend access must be authorized server-side and through appropriate database row-level security.
+- Never silently modify shared contribution rules or personal savings targets.
+- Re-run tests, TypeScript, lint, and build before each deployed checkpoint.
 
-## Checkpoint 1 scope
-Scaffold Next.js App Router + TypeScript + Tailwind with accessible responsive navigation and demo-only screens: Home, Accounts, Transactions, Contributions, Savings, Settings. Add lint/typecheck/tests and a README with cloud setup instructions. Keep dependencies minimal. Run checks. Report what passes. Stop before authentication, banking integrations, financial calculations, notifications, or deployment involving real data.
+## Checkpoint 2 scope
+Implement working demonstration forms for expenses, income, manual transfers and weekly shared contributions with local-only persistence; keep independent account balances; permit undo by removing an entry; explain demonstration limitations. Do not connect bank accounts or implement unverified authentication. Next step: secure auth/data model, then true account-level permissions and multi-user features.
