@@ -85,7 +85,7 @@ export default function SecureLedger({
             </label>
             <button type="submit" className="action-button">Save starting balance</button>
           </form>
-          <p className="muted">Starting balance isn't income. It becomes locked after the first activity
+          <p className="muted">Starting balance isn&apos;t income. It becomes locked after the first activity
             for this account.</p>
         </details>}
         {personal && owner && <details className="account-details">
