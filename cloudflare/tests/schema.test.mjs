@@ -106,6 +106,14 @@ test("immutable journal and locked opening balances prevent quiet rewrites",()=>
   db.close();
 });
 
+test("fractional cents are rejected at the SQLite storage layer",()=>{
+  const db=dbWithFixtures();
+  assert.throws(()=>insert(db,{id:"fractional",kind:"income",to:"pa",amount:1.5}),/CHECK/);
+  assert.throws(()=>db.exec("UPDATE accounts SET opening_balance_cents=1.25 WHERE id='pa'"),/CHECK/);
+  assert.equal(balance(db,"pa"),10000);
+  db.close();
+});
+
 test("household membership hard limit is two",()=>{
   const db=dbWithFixtures();
   assert.throws(()=>db.exec("INSERT INTO household_members(household_id,user_id) VALUES ('h','c')"),/limit/);
