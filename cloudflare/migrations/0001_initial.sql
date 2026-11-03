@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS accounts (
   visibility TEXT NOT NULL DEFAULT 'private'
     CHECK(visibility IN ('private','balance','summary','full')),
   opening_balance_cents INTEGER NOT NULL DEFAULT 0
-    CHECK(opening_balance_cents BETWEEN -999999999 AND 999999999),
+    CHECK(typeof(opening_balance_cents)='integer' AND opening_balance_cents BETWEEN -999999999 AND 999999999),
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   CHECK(
     (kind='personal' AND owner_user_id IS NOT NULL)
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS ledger_events (
   kind TEXT NOT NULL CHECK(kind IN ('expense','income','transfer')),
   from_account_id TEXT REFERENCES accounts(id) ON DELETE RESTRICT,
   to_account_id TEXT REFERENCES accounts(id) ON DELETE RESTRICT,
-  amount_cents INTEGER NOT NULL CHECK(amount_cents BETWEEN 1 AND 999999999),
+  amount_cents INTEGER NOT NULL CHECK(typeof(amount_cents)='integer' AND amount_cents BETWEEN 1 AND 999999999),
   description TEXT NOT NULL CHECK(length(trim(description)) BETWEEN 1 AND 150),
   occurred_on TEXT NOT NULL CHECK(length(occurred_on)=10),
   client_operation_id TEXT NOT NULL,
