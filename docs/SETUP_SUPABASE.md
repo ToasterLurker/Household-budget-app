@@ -1,28 +1,46 @@
-# Checkpoint 3 — Connect secure sign-in (not enabled yet)
+# Supabase Free test database — current setup
 
-The application now contains a **staged** Supabase Auth + PostgreSQL row-level-security foundation. It is intentionally disabled until a Supabase project is provisioned and the security test plan is completed.
+**Project:** `household-budget-app-test` (Supabase project ref `xomtjnzqfxsddkmlnnqz`) under the user-selected **HomeBudgeting** organization.
 
-## Mobile-friendly setup
+**Cost checked:** $0/month under the organization's free plan. No paid upgrades were enabled.
 
-1. Create a Supabase project at https://supabase.com/dashboard and choose a strong, unique project database password. Do not paste that password into this chat or commit it anywhere.
-2. Apply `supabase/migrations/202611030001_secure_household_foundation.sql` to a **test project** through the Supabase SQL Editor. Treat this as an unverified migration until the security acceptance matrix passes.
-3. In Supabase Authentication URL Configuration, set **Site URL** to the Vercel site origin and allow the exact redirect `https://YOUR_DEPLOYMENT.vercel.app/auth/callback`. Keep email verification enabled.
-4. In your **Vercel project settings**, add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and `NEXT_PUBLIC_APP_ORIGIN`. These two Supabase values are designed to be publishable; **never** add the service-role key, admin key, database password, or JWT secret to the app.
-5. Redeploy; open `/sign-in` and create two **test** identities. Confirm email and sign in.
-6. Run the full matrix in `supabase/SECURITY_TEST_PLAN.md` before trying real personal account data.
+**Status (2026-11-03):** Project ACTIVE_HEALTHY, us-east-1. Database schema, household RLS, private operations, atomic ledger RPCs, starting-balance controls and column-level grants applied successfully. Vercel environment variables `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and `NEXT_PUBLIC_APP_ORIGIN` configured in production/preview without administrator keys.
 
-## How this checkpoint behaves
+## Required user step: Supabase Auth URL Configuration
 
-- Without configuration, `/secure` shows a clearly labeled staging screen and the existing fictional-money demo continues working.
-- With configuration, sign-in, sign-up, email confirmation, per-person membership and invite acceptance can work against an applied Supabase migration.
-- Each member can create a single household or use a one-time invite from an existing household; two separate shared accounts are created with zero balances.
-- A personal account can be created as **private by default**, with zero balance. No real transaction editing, payments, banking, auto sync or personal visibility changing is implemented.
-- Real data must remain disabled until live RLS tests have passed.
+See [TEST_LOGIN_SETUP.md](TEST_LOGIN_SETUP.md). Set Supabase **Authentication → URL Configuration**:
+- Site URL: `https://household-budget-app-gold-iota.vercel.app`
+- Redirect URL: `https://household-budget-app-gold-iota.vercel.app/auth/callback`
 
-## Important integration note
+This requires a one-time action in the Supabase dashboard; the current connector cannot change the Auth URL allowlist. Keep email confirmation on. Do not send login credentials or secrets to ChatGPT.
 
-The initial Vercel deployment was uploaded directly rather than connected to GitHub's automatic-deployment integration. After changing environment variables, a new deployment is necessary. The hosted demo can continue operating independently until that connection is established.
+## Completed development
 
-## Non-goals for this checkpoint
+- Backend RLS: own-private vs shared visibility; private account activity excluded from balance/summary permissions.
+- Separate personal/account membership. Maximum two members per household.
+- Two zero-balance shared accounts upon household creation.
+- One-use invitation codes (cryptographically random, hashed at rest and time-limited).
+- Signed-in server actions for test-only income, expenses, transfers, starting balances and privacy settings.
+- Atomic ledger operations with idempotency guard against repeated submissions.
+- Tests using three fictional SQL role-simulation identities passed, leaving zero test users and rows after rollback.
+- Source code, schema migrations, and extensive acceptance checklist committed to GitHub.
+- Deployment build/test/typecheck/lint succeeded for the staged secure workspace.
 
-No bank linking, automated transfers, financial forecasts, real transaction writes, or deployment with real finances. All sign-in and database code is awaiting external setup and live security testing.
+## Still blocked from real financial use
+
+- Two independent phone/desktop browser accounts and actual Auth callback testing
+- Email confirmation and password recovery verification
+- Concurrent access/transfer correctness under load
+- Real-user permission tests beyond simulated Postgres RLS
+- Secure authenticated export, import and reliable recovery
+- No-cost fallback for Supabase Free project pauses
+- True savings, contributions, financial calendar, reconciliation and optional free statement imports
+
+Never enter real personal financial data or banking credentials in this test workspace until those gates pass.
+
+## Security and pricing
+
+- **Never** place database passwords, Supabase service role/secret keys or other privileged credentials in `NEXT_PUBLIC_*` environment variables.
+- Publishable keys are safe only because database RLS and narrow RPC authorization enforce account access.
+- Monthly cost remains $0 within the published Supabase Free quotas. No provider can guarantee indefinite free hosting; portability remains mandatory.
+- [Zero-cost operating policy](ZERO_COST_POLICY.md) is a permanent development constraint.
