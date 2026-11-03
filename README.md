@@ -1,36 +1,47 @@
 # Household Budget App
 
-A private, Chrome-first household budgeting Progressive Web App project. This is a **fictional, local-only demonstration** while the secure backend is being designed.
+A responsive, Chrome-first household budgeting web application for two people with independent personal money and shared Bill-Pay / Groceries accounts.
 
-## Checkpoint 2 — Interactive demo
+## Checkpoint 3 — Secure household foundation staged
 
-- Responsive Next.js App Router, TypeScript, Tailwind CSS interface
-- Home, Accounts, Transactions, Contributions, Savings, and Settings pages
-- Money-safe demo ledger using **integer cents**, never floating-point transaction amounts
-- Manual demo purchases and deposits update their example account balance immediately
-- Manual transfers subtract from one example account and add to the other, without counting as spending
-- Weekly 50/50 *example* contribution targets to two separate shared accounts; record the displayed person's contribution as a transfer
-- Remove demo entries to reverse their effect on example balances
-- Data persists in **this browser's localStorage only**, not a server or another phone
-- Automated tests for rounding, transfer integrity, weekly contributions, data validation, and page structure
+**Status: Code deployed, external database not yet connected, live RLS checks not yet run.**
 
-This is a demonstration, **not a production financial service**. Do not enter real personal information or bank account details. There is no authentication, bank synchronization, server-side ledger, financial forecasting, or multi-user visibility control yet. The savings page is a placeholder.
+The existing interactive fictional-data demo still works:
+- Record demo expenses/income and transfers without counting transfers as expenses
+- See separate account balances and weekly contributions
+- Undo entries and persist fictional entries in the same browser's local storage
 
-## Run or verify
+A separate secure workspace is now prepared at `/secure`:
+- Supabase email/password sign-in and confirmation callback, using cookie-based SSR
+- Verifiable sessions via `getClaims()` and Next.js 16 proxy session refresh
+- SQL migration for profiles, household memberships (maximum two), two shared accounts, private personal accounts, and read-only ledger journal
+- PostgreSQL RLS restricting every table; separate account-row and transaction-history visibility
+- Owner/member-only creation routines and one-use cryptographically random partner invitations
+- No direct client writes to account balances or journal records
+- Graceful, explicit setup screen if Supabase environment details are missing
 
-In a Node.js 22+ environment:
+**The secure workspace is in staging and must not be used for real finances yet.** Its database permissions must be tested against independent user identities; the live ledger still has no production mutation APIs.
 
-1. `npm install`
-2. `npm run test`
-3. `npm run typecheck`
-4. `npm run lint`
-5. `npm run build`
-6. `npm run dev` for local preview
+## Setup
 
-No tokens or credentials should be committed. The first deployment uses direct file uploads to Vercel, not an automated GitHub project link.
+See [docs/SETUP_SUPABASE.md](docs/SETUP_SUPABASE.md) for required project setup, [supabase/SECURITY_TEST_PLAN.md](supabase/SECURITY_TEST_PLAN.md) for the test matrix, and [AGENTS.md](AGENTS.md) for product rules.
+
+Never commit service-role keys, database passwords, live personal bank records, or secrets. Public Supabase keys do not bypass RLS.
+
+## Test and build
+
+In a Node.js 22+ workspace:
+
+```bash
+npm install
+npm run test
+npm run typecheck
+npm run lint
+npm run build
+```
+
+The deployment system runs those checks before the Next.js production build.
 
 ## Next checkpoint
 
-Implement secure authentication, a server-side account and transaction model, household membership with access controls, and tests proving personal accounts are private. Do not allow real finances to be recorded until those features are verified.
-
-Read [AGENTS.md](AGENTS.md) for permanent product invariants.
+Provision a test Supabase instance, apply the migration, verify all RLS cases and auth flows. Then implement audited, atomic, integer-cent journal mutation functions and account-level visibility changes before allowing real financial entries.
