@@ -35,3 +35,22 @@
 - Bank auto-sync must be optional; manual entry and free user-controlled CSV/OFX/QFX import must work without any paid aggregator.
 - Plan free export/import, user-controlled backups and portability. Supabase Free pausing/backup limitations and free host quotas must not force an upgrade.
 - If a feature cannot meet zero-cost constraints, propose a free workaround or defer it. Never make users pay to preserve access to their data.
+
+## Architecture simplification decision (2026-11-03)
+
+The user explicitly requested to **stop relying on Supabase**, due to third-party onboarding, setup and maintenance friction. Do not continue building Supabase-dependent features or ask the user to confirm Supabase emails while this pivot is active.
+
+**Preserve the desired product:** two independently authenticated people, separate private personal accounts, shared Bill-Pay and Groceries balances updated across devices, correct atomic transfers, private-by-default data, and a permanent **$0 mandatory recurring-cost** constraint.
+
+Preferred candidate replacement: **a single operating provider** for the public app, server API and database, e.g. Cloudflare Workers (Static Assets + Worker API + D1). It currently offers a no-cost Workers tier and D1 storage/query quotas. Authentication and transaction integrity require a reviewed server-side design, supported sign-in and recovery, security tests, and correct transactional SQL; never substitute shared localStorage or unprotected API endpoints.
+
+**Migration constraints:**
+- Keep the present Vercel fictional demo running while a new hosting architecture is developed and validated.
+- Stop sending new users to Supabase for sign-in; current secure workspace is test-only and should be deprecated after equivalent access and backup coverage exists.
+- Do not delete or erase Supabase data/project without a separate, explicit user decision; historical SQL migrations in GitHub may be retained for audit but must not be reused accidentally as new backend instructions.
+- Prefer minimizing operational accounts over adding numerous external services. GitHub may continue as a code repository only.
+- If no unified hosting solution is approved yet, keep core work local-first, test-only and portable, while preserving the requirement for eventual safe real-time two-person sync.
+- No replacement provider is authorized for paid usage, billing activation, or trial that can incur charges; free limits and exit path must be verified.
+- No real financial data until independent login, private vs shared access, transfer integrity, backup and recovery are independently tested.
+
+The Cloudflare proposal is a *candidate*; do not claim it is already connected or deployed. The existing Supabase database remains a test resource, not the chosen long-term architecture.
