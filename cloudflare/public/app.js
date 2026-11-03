@@ -168,7 +168,7 @@ function contributionPage() {
       '</h3><span class="tag">50/50 example</span></div>' +
       '<p class="muted">Personal funding target each Friday</p>' +
       '<div class="balance">' + currency(t.target) +
-      '</div><div class="progress"><div style="width:' + width + '%"></div></div>' +
+      '</div><progress class="progress-native" max="' + t.target + '" value="' + Math.min(t.target, funded) + '"></progress>' +
       '<p class="muted">Recorded this week: ' + currency(funded) + '</p>' +
       '<p class="muted">Remaining: ' + currency(remaining) + '</p>' +
       '<button type="button" class="primary" data-action="fund" data-account="' + t.id + '"' +
