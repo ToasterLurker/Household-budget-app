@@ -12,7 +12,6 @@ export type AuthorizedAccount = {
   owner_user_id: string | null;
   visibility: "private" | "balance" | "summary" | "full";
   current_balance_cents: number | string | null;
-  opening_balance_cents: number | string | null;
 };
 export type AuthorizedJournalRow = {
   id: string;
