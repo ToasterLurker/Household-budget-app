@@ -181,3 +181,25 @@ h3 { font-size:15px; margin:0; font-weight:750; }
 .import-control input[type=file] { width:100%; font-size:13px; padding:9px; background:#f7fafc; border:1px solid var(--border); border-radius:9px; }
 .import-control input[type=file]:focus-visible { outline:3px solid #4b9dc5; outline-offset:2px; }
 @media(max-width:440px) { .backup-actions .action-button { width:100%; } }
+
+/* Authenticated staging workspace — still uses fictional test-only records. */
+.secured-account { min-height: 165px; }
+.account-details { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 13px; }
+.account-details summary { color: #176a8b; font-weight: 750; font-size: 12px; cursor: pointer; }
+.account-details summary:focus-visible { outline: 3px solid #4b9dc5; outline-offset: 3px; }
+.compact-form { display: grid; gap: 12px; margin: 16px 0 10px; }
+.compact-form label { display: grid; gap: 7px; color: #53677d; font-size: 12px; font-weight: 700; }
+.compact-form input,.compact-form select {
+  display: block; width: 100%; min-width: 0; border: 1px solid #cbd7e3;
+  border-radius: 9px; padding: 11px; background: #fff; color: #152238; font: inherit; font-size: 13px;
+}
+.compact-form input:focus-visible,.compact-form select:focus-visible { outline: 2px solid #4b9dc5; outline-offset: 2px; }
+.compact-form .action-button { justify-self:start; margin: 2px 0 0; }
+.secure-wrap .page-heading form .action-button { margin-top: 0; }
+.secure-wrap .page-heading { align-items: center; }
+.secure-wrap .panel-top .tag { margin-left: auto; }
+.secure-wrap .form-columns { margin-bottom: 10px; }
+@media (max-width: 540px) {
+  .secure-wrap .page-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .secure-wrap .page-heading form .action-button { padding: 10px 12px; }
+}
