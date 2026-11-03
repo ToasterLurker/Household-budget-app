@@ -124,12 +124,12 @@ function Home({ entries }: { entries: LedgerEntry[] }) {
       {negatives.map(a => a.name).join(", ")} {negatives.length > 1 ? "have" : "has"} a negative demo balance.
     </div>}
     <section className="section-heading"><h2>Shared household accounts</h2>
-      <p className="muted">Tracked separately so one account cannot hide another account's shortage.</p></section>
+      <p className="muted">Tracked separately so one account cannot hide another account&apos;s shortage.</p></section>
     <div className="card-grid">
       <AccountCard accountId="bills" entries={entries} />
       <AccountCard accountId="groceries" entries={entries} />
     </div>
-    <section className="section-heading"><h2>This week's contributions</h2></section>
+    <section className="section-heading"><h2>This week&apos;s contributions</h2></section>
     <div className="panel">
       <div className="event-row"><div><strong>Bill-Pay</strong><p className="muted">Example personal target: $300.00 weekly</p></div>
         <span className="tag">{formatMoney(contributionsThisWeek(entries, "bills"))} recorded</span></div>
@@ -144,7 +144,7 @@ function Accounts({ entries }: { entries: LedgerEntry[] }) {
     <Heading eyebrow="ACCOUNTS" title="Your accounts" description="Personal checking and household funds, with independent balances." />
     <div className="card-grid">{accountDefinitions.map(a =>
       <AccountCard key={a.id} accountId={a.id} entries={entries} />)}</div>
-    <p className="footnote">Each demo account starts with a fictional opening balance. All recorded expenses, income, and transfers recalculate that account's balance. No bank data is read or changed.</p>
+    <p className="footnote">Each demo account starts with a fictional opening balance. All recorded expenses, income, and transfers recalculate that account&apos;s balance. No bank data is read or changed.</p>
   </>;
 }
 function ActivityForm({ entries, hydrated }: { entries: LedgerEntry[]; hydrated: boolean }) {
@@ -288,7 +288,7 @@ function Contributions({ entries, hydrated }: { entries: LedgerEntry[]; hydrated
   }
   return <>
     <Heading eyebrow="CONTRIBUTIONS" title="Weekly household funding" description="Two separate shared accounts, with fictional 50/50 targets." />
-    <p className="muted block-note">This prototype records only the currently displayed person's side of each shared contribution. Partner payments, reminders, and approval controls come after secure sign-in.</p>
+    <p className="muted block-note">This prototype records only the currently displayed person&apos;s side of each shared contribution. Partner payments, reminders, and approval controls come after secure sign-in.</p>
     <div className="card-grid">{targets.map(target => {
       const funded = contributionsThisWeek(entries, target.toId);
       const remaining = Math.max(0, target.targetCents - funded);
