@@ -1,0 +1,18 @@
+{
+  // Cloudflare-only runtime: website, Worker API, and D1 database.
+  // Free-tier automatic D1 provisioning avoids an extra manual setup step.
+  "name": "household-budget",
+  "main": "./src/worker.mjs",
+  "compatibility_date": "2026-11-03",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "household-budget-data" }
+  ],
+  "observability": { "enabled": false }
+}
