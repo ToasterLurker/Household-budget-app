@@ -8,6 +8,7 @@ import {
 } from "@/lib/ledger-core.mjs";
 import type { AccountId, LedgerEntry } from "@/lib/ledger-core.mjs";
 import Link from "next/link";
+import DemoBackupTools from "@/components/demo-backup-tools";
 
 type PageSection = "home" | "accounts" | "transactions" | "contributions" | "savings" | "settings";
 type LedgerSnapshot = { entries: LedgerEntry[]; hydrated: boolean };
@@ -318,7 +319,7 @@ function Savings() {
       <p className="muted">Virtual allocations, physical savings accounts, and weekly savings schedules will be added after account access is secured. No mandatory personal savings or catch-up payments.</p></div>
   </>;
 }
-function Settings({ entries }: { entries: LedgerEntry[] }) {
+function Settings({ entries, hydrated }: { entries: LedgerEntry[]; hydrated: boolean }) {
   const [feedback, setFeedback] = useState("");
   function reset() {
     if (!window.confirm("Reset the local demonstration? This will erase your changes and restore all sample transactions.")) return;
@@ -333,6 +334,7 @@ function Settings({ entries }: { entries: LedgerEntry[] }) {
       <button type="button" className="action-button danger-action" onClick={reset}>Reset all demo entries</button>
       <p className="form-feedback" role="status">{feedback}</p>
     </div>
+    <DemoBackupTools entries={entries} hydrated={hydrated} onRestore={persist} />
     <div className="panel spaced-panel"><h3>Privacy roadmap</h3>
       <p className="muted">Each future household member will have their own sign-in. Personal accounts will default to private, and owners will choose how much information to share. Shared accounts will be visible to both members.</p>
     </div>
@@ -347,6 +349,6 @@ export default function DemoWorkspace({ section }: { section: PageSection }) {
     {section === "transactions" && <Transactions entries={entries} hydrated={hydrated} />}
     {section === "contributions" && <Contributions entries={entries} hydrated={hydrated} />}
     {section === "savings" && <Savings />}
-    {section === "settings" && <Settings entries={entries} />}
+    {section === "settings" && <Settings entries={entries} hydrated={hydrated} />}
   </>;
 }
